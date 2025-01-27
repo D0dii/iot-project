@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = ['id', 'title', 'question', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'question', 'is_active', 'created_at', 'updated_at']
 
 class UserAnswerSerializer(serializers.ModelSerializer):
     class Meta:

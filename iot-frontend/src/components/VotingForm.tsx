@@ -14,23 +14,42 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  name: z.string(),
-  content: z.string(),
+  title: z.string(),
+  question: z.string(),
 });
 
 export function VotingForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      content: "",
+      title: "",
+      question: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const router = useRouter();
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/questions/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create a voting");
+      }
+
+      router.push("/admin/voting/start");
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
 
   return (
@@ -38,7 +57,7 @@ export function VotingForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="name"
+          name="title"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nazwa głosowania</FormLabel>
@@ -51,7 +70,7 @@ export function VotingForm() {
         />
         <FormField
           control={form.control}
-          name="content"
+          name="question"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Treść głosowania</FormLabel>

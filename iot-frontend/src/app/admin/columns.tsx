@@ -31,10 +31,10 @@ export const columns: ColumnDef<Voting>[] = [
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: "title",
     header: () => <div className="flex justify-center">Nazwa</div>,
     cell: ({ row }) => {
-      const cellValue: string = row.getValue("name");
+      const cellValue: string = row.getValue("title");
 
       return <div className="flex justify-center">{cellValue}</div>;
     },

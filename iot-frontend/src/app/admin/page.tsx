@@ -4,52 +4,38 @@ import { DataTable } from "./data-table";
 
 export interface Voting {
   id: number;
-  name: string;
+  title: string;
+  question: string;
   votesFor: number;
   votesAgainst: number;
   votesWithheld: number;
 }
 
-export const votings: Voting[] = [
-  {
-    id: 1,
-    name: "Głosowanie nr 82",
-    votesFor: 280,
-    votesAgainst: 100,
-    votesWithheld: 72,
-  },
-  {
-    id: 2,
-    name: "Głosowanie nr 83",
-    votesFor: 200,
-    votesAgainst: 180,
-    votesWithheld: 72,
-  },
-  {
-    id: 3,
-    name: "Głosowanie nr 84",
-    votesFor: 200,
-    votesAgainst: 180,
-    votesWithheld: 72,
-  },
-  {
-    id: 4,
-    name: "Głosowanie nr 85",
-    votesFor: 200,
-    votesAgainst: 180,
-    votesWithheld: 72,
-  },
-  {
-    id: 5,
-    name: "Głosowanie nr 86",
-    votesFor: 200,
-    votesAgainst: 180,
-    votesWithheld: 72,
-  },
-];
+export interface ApiVoting {
+  id: number;
+  title: string;
+  question: string;
+  za: number;
+  przeciw: number;
+  "wstrzymal sie": number;
+}
 
-export default function Home() {
-  const data = votings;
+async function getData(): Promise<Voting[]> {
+  const response = await fetch("http://127.0.0.1:8000/api/v1/user-answers/");
+  const data = await response.json();
+  const votings: Voting[] = data.map((voting: ApiVoting) => ({
+    id: voting.id,
+    title: voting.title,
+    question: voting.question,
+    votesFor: voting.za,
+    votesAgainst: voting.przeciw,
+    votesWithheld: voting["wstrzymal sie"],
+  }));
+  return votings;
+}
+
+export default async function Home() {
+  const data = await getData();
 
   return (
     <>

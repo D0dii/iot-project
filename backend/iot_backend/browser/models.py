@@ -12,6 +12,7 @@ class Question(models.Model):
     question = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
 class UserAnswer(models.Model):
     ANSWER_CHOICES = [
