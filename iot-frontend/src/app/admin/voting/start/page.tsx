@@ -2,13 +2,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-
-interface Question {
-  id: number;
-  title: string;
-  question: string;
-  is_active: boolean;
-}
+import { Question } from "@/types/types";
+import { getLatestQuestion } from "@/utils/fetchQuestion";
 
 export default function Home() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -16,21 +11,21 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  async function fetchLatestQuestion() {
-    try {
-      setLoading(true);
-      const response = await fetch("http://127.0.0.1:8000/api/v1/questions/");
-      const data: Question[] = await response.json();
-      const latestQuestion = data.reduce((max, question) =>
-        question.id > max.id ? question : max
-      );
-      setCurrentQuestion(latestQuestion);
-    } catch (err) {
-      setError(err as string);
-    } finally {
-      setLoading(false);
-    }
-  }
+  useEffect(() => {
+    const fetchQuestion = async () => {
+      try {
+        setLoading(true);
+        const latestQuestion = await getLatestQuestion();
+        setCurrentQuestion(latestQuestion);
+      } catch (error) {
+        setError(error as string);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestion();
+  }, []);
 
   async function endVoting() {
     if (!currentQuestion) return;
@@ -57,20 +52,20 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    fetchLatestQuestion();
-  }, []);
-
   if (loading) {
-    return <div>Ładowanie...</div>;
+    return <div className="flex justify-center items-center">Ładowanie...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="flex justify-center items-center">{error}</div>;
   }
 
   if (!currentQuestion) {
-    return <div>Brak dostępnych głosowań.</div>;
+    return (
+      <div className="flex justify-center items-center">
+        Brak dostępnych głosowań.
+      </div>
+    );
   }
 
   return (

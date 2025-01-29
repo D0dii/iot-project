@@ -1,24 +1,7 @@
 import { VotingForm } from "@/components/VotingForm";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-
-export interface Voting {
-  id: number;
-  title: string;
-  question: string;
-  votesFor: number;
-  votesAgainst: number;
-  votesWithheld: number;
-}
-
-export interface ApiVoting {
-  id: number;
-  title: string;
-  question: string;
-  za: number;
-  przeciw: number;
-  "wstrzymal sie": number;
-}
+import { Voting, ApiVoting } from "@/types/types";
 
 async function getData(): Promise<Voting[]> {
   const response = await fetch("http://127.0.0.1:8000/api/v1/user-answers/");
