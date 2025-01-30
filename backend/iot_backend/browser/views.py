@@ -4,8 +4,11 @@ from .serializers import QuestionSerializer, UserAnswerSerializer, UserSerialize
 from .models import Question, User, UserAnswer
 from rest_framework import generics
 from rest_framework.views import APIView
-
+from rest_framework.response import Response
+from rest_framework import status
 from django.http import HttpResponse, JsonResponse
+from .mqtt_client import publish_message
+from .mqtt_client import client
 
 class UserListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -19,6 +22,13 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 class QuestionListCreate(generics.ListCreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        publish_message(client, "backend", request.data["title"].split(" ")[2])
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class QuestionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
