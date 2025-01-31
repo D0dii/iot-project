@@ -22,6 +22,7 @@ def on_message(client, userdata, msg):
         return
     
     user_answer = UserAnswer(user=user, question=question, answer=vote, created_at=now())
+    user_answer.save()
     print(f"Received message: {message}")
     publish_message(client, "backend", "-1")
 

@@ -27,13 +27,16 @@ class QuestionListCreate(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        publish_message(client, "backend", request.data["title"].split(" ")[2])
+        publish_message(client, "backend", serializer.data["id"])
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class QuestionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     lookup_field = "pk"
+    def update(self, request, *args, **kwargs):
+        publish_message(client, "backend", "-2")
+        return super().update(request, *args, **kwargs)
 
 class UserAnswerListCreate(generics.ListCreateAPIView):
     queryset = UserAnswer.objects.all()
