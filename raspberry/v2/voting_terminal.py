@@ -52,7 +52,7 @@ def disconnect_from_broker():
 
 def call_voter(uid, vote):
     global vote_number
-    client.publish(MQTT_TOPIC, str(uid) + "-" + str(vote) + "-" + str(vote_number))
+    client.publish(MQTT_TOPIC, str(uid) + "-" + str(vote) + "-" + str(vote_number) + "-backend")
 
 def show_start_screen():
     #display.clear()
